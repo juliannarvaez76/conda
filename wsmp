@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Usuario</title>
+    <script>
+        async function enviarFormulario(event) {
+            event.preventDefault();
+            
+            const tipoDocumento = document.getElementById('tipoDocumento').value;
+            const numeroDocumento = document.getElementById('numeroDocumento').value;
+
+            try {
+                const response = await fetch('https://oficinavirtualmp.coomeva.com.co/msc-back/generic-service/execute', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3Mzg3ODQxMjcsImlzcyI6IkN1ZW50YUNvb21ldmEiLCJzdWIiOiI5MDE0MTcxMjQiLCJleHAiOjE3Mzg3ODQ3Mjd9.rcvIX52h8F-3tCOvlgRjhj9sxbo_ACRix3jRebOxvZc' // Reemplaza TU_TOKEN_AQUI con el token adecuado
+                    },
+                    body: JSON.stringify({
+                        nombreClave: 'getInfoUsuarioMP',
+                        jsonParametros: JSON.stringify({
+                            prm_docu_tipo: tipoDocumento,
+                            prm_docu_nro: numeroDocumento
+                        })
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                document.getElementById('resultado').innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('resultado').innerText = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Consulta de Usuario</h1>
+    <form onsubmit="enviarFormulario(event)">
+        <label for="tipoDocumento">Tipo de Documento:</label>
+        <input type="text" id="tipoDocumento" name="tipoDocumento" required><br><br>
+        
+        <label for="numeroDocumento">Número de Documento:</label>
+        <input type="text" id="numeroDocumento" name="numeroDocumento" required><br><br>
+        
+        <button type="submit">Consultar</button>
+    </form>
+    <h2>Resultado:</h2>
+    <pre id="resultado"></pre>
+</body>
+</html>
